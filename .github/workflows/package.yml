@@ -1,0 +1,45 @@
+name: Package Addon
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Prepare addon folder
+        run: |
+          mkdir -p build/FirstDance
+          cp FirstDance.lua build/FirstDance/
+          cp FirstDance.toc build/FirstDance/
+          if [ -f README.md ]; then cp README.md build/FirstDance/; fi
+
+      - name: Create zip archive
+        run: |
+          cd build
+          zip -r FirstDance.zip FirstDance
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: FirstDance
+          path: build/FirstDance.zip
+
+      - name: Attach zip to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" build/FirstDance.zip --clobber

@@ -1,0 +1,7 @@
+## Interface: 120001
+## Title: First Dance
+## Notes: First Dance icon countdown and ready TTS
+## Author: Matukaa
+## SavedVariables: FirstDanceDB
+
+FirstDance.lua
