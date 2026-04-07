@@ -25,6 +25,7 @@ jobs:
           mkdir -p build/FirstDance
           cp FirstDance.lua build/FirstDance/
           cp FirstDance.toc build/FirstDance/
+          if [ -f FirstDance.tga ]; then cp FirstDance.tga build/FirstDance/; fi
           if [ -f README.md ]; then cp README.md build/FirstDance/; fi
 
       - name: Create zip archive
