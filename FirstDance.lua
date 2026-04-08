@@ -216,7 +216,7 @@ end
 
 local function CreateCountdownIcon()
     local frame = CreateFrame("Frame", "FirstDanceCountdownIcon", UIParent)
-    frame:SetFrameStrata("HIGH")
+    frame:SetFrameStrata("LOW")
     frame:Hide()
 
     local icon = frame:CreateTexture(nil, "BACKGROUND")
