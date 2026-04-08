@@ -488,6 +488,7 @@ end
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 
 eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
     if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
@@ -495,6 +496,11 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1, ...)
         iconFrame = CreateCountdownIcon()
         ApplyIconLayout()
         configPanel = CreateConfigPanel()
+        return
+    end
+
+    if event == "PLAYER_REGEN_DISABLED" then
+        StopCountdown()
         return
     end
 
