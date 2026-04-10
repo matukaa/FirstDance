@@ -215,8 +215,26 @@ local function StartCountdown(forceShow)
 end
 
 local function CreateCountdownIcon()
-    local frame = CreateFrame("Frame", "FirstDanceCountdownIcon", UIParent)
+    local frame = CreateFrame("Button", "FirstDanceCountdownIcon", UIParent)
     frame:SetFrameStrata("LOW")
+    frame:SetMovable(true)
+    frame:EnableMouse(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", frame.StartMoving)
+    frame:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
+        local screenX, screenY = self:GetCenter()
+        local uiCenterX, uiCenterY = UIParent:GetCenter()
+        local newX = math.max(-800, math.min(800, math.floor(screenX - uiCenterX + 0.5)))
+        local newY = math.max(-600, math.min(600, math.floor(screenY - uiCenterY + 0.5)))
+        FirstDanceDB.iconOffsetX = newX
+        FirstDanceDB.iconOffsetY = newY
+        ApplyIconLayout()
+        if configPanel then
+            if configPanel.offsetXSlider then configPanel.offsetXSlider:SetValue(newX) end
+            if configPanel.offsetYSlider then configPanel.offsetYSlider:SetValue(newY) end
+        end
+    end)
     frame:Hide()
 
     local icon = frame:CreateTexture(nil, "BACKGROUND")
@@ -228,6 +246,7 @@ local function CreateCountdownIcon()
     border:SetAllPoints()
     border:SetTexture("Interface\\Buttons\\UI-Debuff-Overlays")
     border:SetTexCoord(0.296875, 0.5703125, 0, 0.515625)
+    frame.border = border
 
     local cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
     cooldown:SetAllPoints()
@@ -239,6 +258,16 @@ local function CreateCountdownIcon()
     countdownText:SetPoint("CENTER", frame, "CENTER", 0, 0)
     countdownText:SetText("")
     frame.countdownText = countdownText
+
+    local Masque = LibStub and LibStub("Masque", true)
+    if Masque then
+        local group = Masque:Group("FirstDance")
+        group:AddButton(frame, {
+            Icon     = frame.icon,
+            Border   = frame.border,
+            Cooldown = frame.cooldown,
+        })
+    end
 
     return frame
 end
@@ -399,6 +428,9 @@ local function CreateConfigPanel()
         end
     )
 
+    panel.offsetXSlider = offsetXSlider
+    panel.offsetYSlider = offsetYSlider
+
     local readyCheck = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
     readyCheck:SetPoint("TOPLEFT", sizeSlider, "BOTTOMLEFT", 0, -18)
     readyCheck:SetChecked(FirstDanceDB.readyTtsEnabled)
@@ -480,7 +512,7 @@ local function CreateConfigPanel()
     hintText:SetPoint("TOPLEFT", readyRateLabel, "BOTTOMLEFT", 0, -18)
     hintText:SetWidth(360)
     hintText:SetJustifyH("LEFT")
-    hintText:SetText("Use /firstdance or /fd to open settings. Test Icon stays visible until the config panel closes.")
+    hintText:SetText("Drag the icon to reposition it. Use /firstdance or /fd to open settings. Test Icon stays visible until the config panel closes.")
 
     return panel
 end
