@@ -3,6 +3,7 @@
 ## Notes: First Dance icon countdown and ready TTS
 ## Author: Matukaa
 ## IconTexture: Interface\AddOns\FirstDance\FirstDance.tga
+## OptionalDeps: Masque
 ## SavedVariables: FirstDanceDB
 
 FirstDance.lua
